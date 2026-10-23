@@ -2,7 +2,7 @@
 
 **Data do registro:** 23/10/2026  
 **Ambiente:** VetCare Lab local (`07-laboratorio-web/`), HTML/CSS/JavaScript, navegador não informado  
-**Origem da evidência:** relato da execução manual da responsável pelo laboratório  
+**Origem da evidência:** relatos de execução manual e capturas de tela produzidas pela responsável pelo laboratório  
 **Escopo:** protótipo independente. **Não é evidência de teste da API, do banco de dados ou do sistema oficial.**
 
 ## CT-AUT-001 — Login válido e exibição do perfil
@@ -21,6 +21,7 @@
   **Evidência 02 — Perfil Administrador**
 
   ![Painel do Administrador](evidencias/hu-001/CT-AUT-001-perfil-administrador.png)
+
 - **Limitação:** este registro não comprova autenticação na API ASP.NET Core, autorização de endpoints nem sessão JWT.
 
 ## VAL-HU001-001 — Validação de campos obrigatórios (verificação complementar)
@@ -30,14 +31,33 @@
 - **Esperado:** impedir o avanço e mostrar mensagem de orientação.
 - **Observado:** a interface exibiu `Informe o e-mail e a senha para entrar.`
 - **Resultado:** **Aprovado no laboratório (execução manual relatada).**
-- **Rastreabilidade:** complemento de validação de entrada da HU-001; **não equivale** a executar integralmente o CT-AUT-002 (credenciais incorretas).
+- **Rastreabilidade:** complemento de validação de entrada da HU-001; **não equivale** à verificação de credenciais incorretas do CT-AUT-002.
+
+## CT-AUT-002 — Credenciais inválidas
+
+- **Objetivo:** verificar se o laboratório recusa credenciais inválidas sem permitir acesso ao painel demonstrativo.
+- **Procedimento relatado:** (1) tentar login com endereço de e-mail inexistente; (2) selecionar a conta Administrador e informar senha incorreta.
+- **Esperado:** exibir `E-mail ou senha inválidos.` nas duas tentativas e permanecer na tela de login.
+- **Observado:** conforme relato da execução manual, as duas tentativas foram recusadas, com apresentação da mensagem esperada e sem acesso ao painel.
+- **Resultado:** **Aprovado no laboratório (execução manual relatada).**
+- **Evidências:** duas capturas informadas pela responsável pelo laboratório.
+
+  **Evidência 01 — E-mail inexistente**
+
+  ![Tentativa com e-mail inexistente](evidencias/hu-001/CT-AUT-002-email-invalido.png)
+
+  **Evidência 02 — Senha incorreta**
+
+  ![Tentativa com senha incorreta](evidencias/hu-001/CT-AUT-002-senha-incorreta.png)
+
+- **Limitação:** o resultado é restrito à validação demonstrativa no navegador; não comprova comportamento da API oficial nem segurança da autenticação.
 
 ## Situação dos demais testes
 
 | Teste | Situação no sistema oficial | Situação no laboratório |
 | --- | --- | --- |
-| CT-AUT-001 — Login válido | Não executado | Aprovado (relato manual) |
-| CT-AUT-002 — Credenciais inválidas | Não executado | Não executado integralmente |
+| CT-AUT-001 — Login válido | Não executado | Aprovado (relato manual e imagens) |
+| CT-AUT-002 — Credenciais inválidas | Não executado | Aprovado (relato manual e imagens) |
 | CT-AUT-003 — Logout | Não executado | Não registrado nesta execução |
 | CT-AUT-004 — Bloqueio por tentativas | Não executado | Não implementado |
 | CT-AUT-005 — Conta inativa | Não executado | Não implementado |
@@ -49,19 +69,19 @@
 
 ### O que encontramos?
 
-O laboratório demonstrou login válido por contas fictícias e validação de campos vazios, conforme execução relatada. O código está em `07-laboratorio-web/js/app.js` e `index.html`.
+No VetCare Lab, foram executados manualmente login com contas fictícias, verificação de campos obrigatórios e duas tentativas de credenciais incorretas. Os comportamentos observados foram os esperados, conforme os relatos da execução. As capturas foram vinculadas aos testes CT-AUT-001 e CT-AUT-002. O código demonstrativo está em `07-laboratorio-web/js/app.js` e `index.html`.
 
 ### Por que isso importa?
 
-O resultado cria evidência inicial de conformidade do **protótipo** com comportamentos associados à HU-001, mas não prova conformidade do sistema oficial.
+Os resultados fornecem evidências de funcionamento dos fluxos demonstrativos e tornam o registro de QA rastreável por caso de teste. **Não comprovam a conformidade do sistema oficial** nem substituem testes da API.
 
 ### O que recomendamos?
 
-Manter os testes reais da API como não executados. Prosseguir com CT-AUT-002 no laboratório, testando e-mail inexistente e senha incorreta; registrar a saída observada. Capturas de tela podem fortalecer a evidência, mas não foram fornecidas nesta execução.
+Manter os testes reais da API como não executados. Executar e registrar o CT-AUT-003 (logout demonstrativo) e, separadamente, conferir a responsividade e a regressão visual após a divisão do CSS. Só discutir correções na implementação do Mateus quando houver evidência sobre o sistema original.
 
 ### Como explicar à equipe?
->
-> “Executamos manualmente a HU-001 no VetCare Lab, nosso simulador independente. O login válido apresentou os perfis esperados, e o formulário avisou corretamente quando os campos estavam vazios. Registramos esses resultados como aprovados **somente no laboratório**; a autenticação real do VetCare continua aguardando testes.”
+
+> “Executamos manualmente os cenários de login válido e credenciais inválidas no VetCare Lab, documentando os resultados e associando capturas de tela. Também verificamos a validação de campos vazios. A aprovação é apenas do protótipo; a autenticação real do VetCare ainda não foi testada.”
 
 ## Referências
 
