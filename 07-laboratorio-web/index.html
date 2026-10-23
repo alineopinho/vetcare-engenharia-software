@@ -1,21 +1,27 @@
 <!doctype html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Laboratório demonstrativo de Engenharia de Software do VetCare.">
   <title>VetCare Lab | HU-001</title>
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/login.css">
   <script src="js/app.js" type="module"></script>
 </head>
+
 <body>
   <main class="layout">
     <section class="intro" aria-label="Sobre o laboratório">
       <span class="eyebrow">Engenharia de Software · Protótipo independente</span>
-      <div class="brand"><span class="mark" aria-hidden="true">✚</span><h1>VetCare <em>Lab</em></h1></div>
+      <div class="brand"><span class="mark" aria-hidden="true">✚</span>
+        <h1>VetCare <em>Lab</em></h1>
+      </div>
       <p class="lead">Validação de fluxos e requisitos, começando pela <strong>HU-001 — Autenticar usuário</strong>.</p>
       <p>Esta demonstração utiliza contas fictícias. Nenhuma senha ou registro clínico real é processado.</p>
-      <div class="info"><strong>O que podemos analisar?</strong><span>Campos obrigatórios, formato de e-mail, mensagens de erro, acesso por perfil e saída da sessão.</span></div>
+      <div class="info"><strong>O que podemos analisar?</strong><span>Campos obrigatórios, formato de e-mail, mensagens
+          de erro, acesso por perfil e saída da sessão.</span></div>
     </section>
     <section class="panel" aria-label="Demonstração interativa">
       <div id="login-view">
@@ -26,7 +32,8 @@
           <label for="email">E-mail</label>
           <input id="email" name="email" type="email" autocomplete="off" placeholder="usuario@exemplo.test" required>
           <label for="password">Senha</label>
-          <input id="password" name="password" type="password" autocomplete="off" placeholder="Digite sua senha de teste" required>
+          <input id="password" name="password" type="password" autocomplete="off"
+            placeholder="Digite sua senha de teste" required>
           <p id="feedback" class="feedback" role="alert" aria-live="polite" hidden></p>
           <button class="primary" type="submit">Entrar</button>
         </form>
@@ -38,14 +45,16 @@
             <button type="button" class="account" data-user="tutor">Tutor</button>
             <button type="button" class="account" data-user="apoio">Apoio administrativo</button>
           </div>
-          <p class="hint">A seleção preenche os campos automaticamente. Este é um simulador, não uma autenticação segura.</p>
+          <p class="hint">A seleção preenche os campos automaticamente. Este é um simulador, não uma autenticação
+            segura.</p>
         </div>
       </div>
       <section id="dashboard-view" hidden aria-label="Painel de demonstração">
         <p class="overline">Demonstração de navegação</p>
         <h2 id="welcome">Bem-vindo!</h2>
         <p id="profile-message" class="muted"></p>
-        <div class="demo-banner">Estado de sessão mantido somente na memória desta página. Recarregar a página encerra a demonstração.</div>
+        <div class="demo-banner">Estado de sessão mantido somente na memória desta página. Recarregar a página encerra a
+          demonstração.</div>
         <h3>Funcionalidades previstas para o laboratório</h3>
         <ul id="resources"></ul>
         <button type="button" id="logout" class="primary">Sair e voltar ao login</button>
@@ -54,4 +63,5 @@
   </main>
   <footer>VetCare Lab · Estudo independente · Não conectado ao VetCare oficial</footer>
 </body>
+
 </html>
