@@ -30,36 +30,42 @@
 ## 3. Registro de divergências e oportunidades
 
 ### ARQ-001 — Stack tecnológico desatualizado
+
 - **Evidência:** ARQ pp. 7, 9, 11–16 menciona Java, Spring, JPA e JDBC; código inspecionado utiliza .NET 10, C#, ASP.NET Core e EF Core/Npgsql.
 - **Impacto:** diagramas de camadas, implantação e sequência podem induzir a interpretação incorreta da implementação.
 - **Proposta:** produzir uma arquitetura **proposta/atualizada**, com registro da mudança de stack e componentes reais; preservar o PDF original.
 - **Status:** divergência confirmada; proposta não aprovada.
 
 ### ARQ-002 — Quatro perfis e autorização
+
 - **Evidência:** VIS p. 3 e REQ RN-005 (p. 16) tratam de Administrador, Veterinário e Tutor; ARQ p. 5 inclui Apoio Administrativo. A VIS p. 4 já cita a equipe de apoio, o que exige interpretação cuidadosa.
 - **Impacto:** autorização, menus, acesso a dados e casos de teste.
 - **Proposta:** tabela de permissões por perfil e operação (visualizar, cadastrar, editar, cancelar, anexar etc.), vinculada às HU e RN.
 - **Status:** esclarecimento necessário, não defeito comprovado.
 
 ### ARQ-003 — Diagramas de fluxo desatualizados
+
 - **Evidência:** diagrama de sequência de avaliação clínica (ARQ p. 14) utiliza `AvaliacaoController`, `AvaliacaoService`, repositórios Spring Data JPA e PostgreSQL; diagrama de camadas na p. 12 e implantação na p. 15 mantêm Spring.
 - **Impacto:** rastreabilidade entre projeto arquitetural, implementação e testes.
 - **Proposta:** redesenhar apenas após inspecionar controllers, casos de uso, repositórios e resposta HTTP reais; distinguir fluxo atual e fluxo recomendado.
 - **Status:** pendente de engenharia reversa detalhada.
 
 ### ARQ-004 — Escopo do portal e do aplicativo
-- **Evidência:** VIS/REQ descrevem aplicação web responsiva; código/plano de commits incluem aplicativo móvel. 
+
+- **Evidência:** VIS/REQ descrevem aplicação web responsiva; código/plano de commits incluem aplicativo móvel.
 - **Impacto:** esforço, arquitetura de autenticação, navegação, distribuição e critérios de aceite.
 - **Proposta:** registrar decisão de ampliação de escopo, funcionalidades compartilhadas e requisitos específicos do aplicativo.
 - **Status:** decisão de produto a confirmar com a equipe.
 
 ### ARQ-005 — Modelagem e migrações de dados
+
 - **Evidência:** MER no ARQ p. 17; no código há `AppDbContext` usando Entity Framework Core.
 - **Impacto:** esquema físico, cardinalidades, chaves, restrições e scripts de evolução.
 - **Proposta:** recuperar o modelo efetivo de entidades, `OnModelCreating` e migrations; confrontar com RN-001, RN-004, RN-007 e RNF-003; produzir **modelo atual**, **modelo proposto** e **plano de migração** (sem executar alterações no banco oficial).
 - **Status:** análise ainda não executada.
 
 ### ARQ-006 — Manutenibilidade e processo colaborativo
+
 - **Evidência:** discussões da equipe indicam classes de caso de uso com múltiplas operações e distribuição de commits por arquivos; risco de mudanças concorrentes.
 - **Impacto:** revisão, integração e testes de regressão.
 - **Proposta:** investigar coesão/acoplamento e dependências antes de separar classes; adotar PR por funcionalidade, responsabilidade clara e commits lógicos, sem prometer eliminação de conflitos apenas pela divisão de arquivos.

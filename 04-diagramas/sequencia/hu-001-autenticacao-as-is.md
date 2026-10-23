@@ -96,7 +96,7 @@ A separação permite investigar, em cada camada, responsabilidades diferentes: 
 ## 4. Rastreabilidade inicial
 
 | Origem | Exigência | Evidência estática | Validação pendente |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | HU-001 CA1 | Login válido acessa painel do perfil | LoginResponse contém usuário e token | Redirecionamento no cliente e autorização efetiva |
 | HU-001 CA2 | Credenciais inválidas exibem mensagem genérica | `MensagemCredenciaisInvalidas` | Testes HTTP e UI |
 | HU-001 CA3 | Logout encerra sessão | Não verificado nos arquivos inspecionados | Código web/mobile e possível revogação de credenciais |
@@ -114,6 +114,7 @@ A separação permite investigar, em cada camada, responsabilidades diferentes: 
 
 **Documentação:** Documento de Requisitos de Software, seção 3 (HU-001), seção 4 (RN-005, RN-006), seção 5 (RNF-002) e seção 6 (matriz de rastreabilidade).  
 **Código:**
+
 - [`UsuariosController.cs`](https://github.com/Rozeti/ProjetoVetCare/blob/main/VetCare.API/Controllers/UsuariosController.cs)
 - [`AutenticarUsuarioUseCase.cs`](https://github.com/Rozeti/ProjetoVetCare/blob/main/VetCare.API/UseCases/AutenticarUsuarioUseCase.cs)
 - [`UsuarioRepository.cs`](https://github.com/Rozeti/ProjetoVetCare/blob/main/VetCare.API/Data/UsuarioRepository.cs)

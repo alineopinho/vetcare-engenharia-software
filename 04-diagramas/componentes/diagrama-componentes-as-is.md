@@ -3,7 +3,7 @@
 **Natureza:** engenharia reversa da implementação atual.  
 **Situação:** análise estática preliminar; nenhum teste executado.  
 **Data:** 23/10/2026.  
-**Fonte principal:** https://github.com/Rozeti/ProjetoVetCare
+**Fonte principal:** <https://github.com/Rozeti/ProjetoVetCare>
 
 ## 1. Objetivo
 
@@ -47,7 +47,7 @@ flowchart TB
 ## 3. Evidências identificadas
 
 | Componente | Evidência do código | Conclusão sustentada |
-|---|---|---|
+| --- | --- | --- |
 | Portal web | `VetCare.Web/package.json`, `src/` | React 19, TypeScript, Vite, componentes, páginas e serviços |
 | Aplicativo móvel | `VetCare.Mobile/package.json` | Expo, React Native, React Navigation |
 | API | `VetCare.API/VetCare.API.csproj` | Aplicação ASP.NET Core em `net10.0` |

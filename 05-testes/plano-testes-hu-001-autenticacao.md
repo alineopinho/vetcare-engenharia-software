@@ -19,7 +19,7 @@ Verificar se a autenticação atende aos critérios de aceite da **HU-001** e à
 ## 2. Matriz de rastreabilidade
 
 | Caso | Origem | Comportamento esperado |
-|---|---|---|
+| --- | --- | --- |
 | CT-AUT-001 | HU-001, CA-1 | Usuário ativo com credenciais corretas entra no sistema e acessa interface compatível com seu perfil. |
 | CT-AUT-002 | HU-001, CA-2 | Credenciais inválidas são recusadas, sem revelar se e-mail ou senha falhou. |
 | CT-AUT-003 | HU-001, CA-3 | Logout encerra a sessão local e retorna ao login. |
@@ -34,6 +34,7 @@ Verificar se a autenticação atende aos critérios de aceite da **HU-001** e à
 ## 3. Casos de teste detalhados
 
 ### CT-AUT-001 — Login válido
+
 - **Pré-condição:** usuário fictício ativo, senha correta e acesso ao cliente de teste.
 - **Passos:** abrir login; informar e-mail e senha válidos; clicar em Entrar.
 - **Esperado:** API aceita a autenticação e devolve dados da sessão; o cliente direciona o usuário para a área adequada ao seu perfil.
@@ -41,12 +42,14 @@ Verificar se a autenticação atende aos critérios de aceite da **HU-001** e à
 - **Status:** Não executado.
 
 ### CT-AUT-002 — Credenciais inválidas
+
 - **Pré-condição:** ambiente de teste pronto, sem bloqueio pré-existente.
 - **Passos:** tentar login com e-mail inexistente; repetir em outro usuário de teste com senha incorreta (evitar ultrapassar o limite do CT-AUT-004).
 - **Esperado:** ambas as tentativas são negadas com mensagem genérica; não ocorre autenticação nem navegação para área restrita.
 - **Status:** Não executado.
 
 ### CT-AUT-003 — Logout
+
 - **Pré-condição:** usuário autenticado.
 - **Passos:** acionar Sair; tentar retornar a uma área protegida; consultar `/api/usuarios/me` sem credencial de sessão.
 - **Esperado:** dados locais de sessão removidos e retorno ao login; sem token a API não autoriza `/me`.
@@ -54,6 +57,7 @@ Verificar se a autenticação atende aos critérios de aceite da **HU-001** e à
 - **Status:** Não executado.
 
 ### CT-AUT-004 — Bloqueio por tentativas
+
 - **Pré-condição:** usuário fictício ativo e desbloqueado; contador de falhas zerado.
 - **Passos:** informar senha incorreta cinco vezes; tentar novamente com a senha correta antes de decorrer o período de bloqueio; repetir após o prazo de bloqueio no ambiente de testes.
 - **Esperado:** a conta é temporariamente bloqueada após a quinta falha; tentativa subsequente é recusada durante o bloqueio; depois do período a autenticação válida volta a ser possível.
@@ -61,24 +65,28 @@ Verificar se a autenticação atende aos critérios de aceite da **HU-001** e à
 - **Status:** Não executado.
 
 ### CT-AUT-005 — Conta inativa
+
 - **Pré-condição:** usuário fictício marcado como inativo.
 - **Passos:** fornecer credenciais corretas.
 - **Esperado:** login recusado; nenhum token utilizável deve ser concedido; a implementação examinada prevê mensagem específica orientando procurar o administrador.
 - **Status:** Não executado.
 
 ### CT-AUT-006 — Acesso por perfil
+
 - **Pré-condição:** usuários de teste com perfis diferentes.
 - **Passos:** autenticar cada perfil no portal; acessar recursos permitidos e tentar, por URL e por chamada à API, acessar recurso reservado a outro perfil.
 - **Esperado:** interface encaminha cada perfil corretamente e o servidor nega ações não autorizadas (não basta esconder botões).
 - **Status:** Não executado.
 
 ### CT-AUT-007 — Sessão expirada ou inválida
+
 - **Pré-condição:** sessão de teste com token controlado ou ambiente onde seja possível simular expiração sem expor segredo.
 - **Passos:** reabrir portal/aplicativo com sessão salva; forçar token expirado/inválido; chamar `/api/usuarios/me`.
 - **Esperado:** API rejeita credencial inválida; cliente elimina a sessão quando reconhece recusa e permite novo login. Anotar diferenças entre web e mobile e comportamento na falta de rede.
 - **Status:** Não executado.
 
 ### CT-AUT-008 — Aplicativo exclusivo do Tutor
+
 - **Pré-condição:** contas fictícias de Tutor e Administrador/Veterinário.
 - **Passos:** tentar login no mobile com conta administrativa válida; depois com conta Tutor válida.
 - **Esperado:** a API pode autenticar ambos, mas o cliente mobile recusa usuário não Tutor **antes de guardar a sessão**; Tutor pode acessar a área do aplicativo.
@@ -108,7 +116,7 @@ Verificar se a autenticação atende aos critérios de aceite da **HU-001** e à
 ## 6. Registro de execução (preencher depois)
 
 | Caso | Data | Ambiente | Resultado observado | Situação (Passou/Falhou/Bloqueado) | Evidência / issue |
-|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- |
 | CT-AUT-001 | — | — | — | Não executado | — |
 | CT-AUT-002 | — | — | — | Não executado | — |
 | CT-AUT-003 | — | — | — | Não executado | — |

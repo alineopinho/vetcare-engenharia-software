@@ -79,7 +79,7 @@ As interfaces têm **públicos e regras de navegação diferentes**, apesar de u
 ## 5. Rastreabilidade
 
 | Referência | Evidência | Estado |
-|---|---|---|
+| --- | --- | --- |
 | HU-001 — autenticação | Controllers, telas e contextos de autenticação | Identificado no código |
 | HU-001 — credenciais inválidas | UseCase e mensagens das telas | Teste pendente |
 | HU-001 — logout | Métodos `sair` em ambos os contextos | Teste pendente |
