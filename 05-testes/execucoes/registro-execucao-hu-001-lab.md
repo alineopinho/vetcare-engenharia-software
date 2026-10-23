@@ -12,7 +12,15 @@
 - **Esperado:** exibir a interface de demonstração correspondente ao usuário escolhido, sem apresentar erro de autenticação.
 - **Observado:** o login foi realizado sem erros; os perfis demonstrativos apareceram corretamente ao selecionar as diferentes contas.
 - **Resultado:** **Aprovado no laboratório (execução manual relatada).**
-- **Evidência:** relato textual de execução manual, recebido em 23/10/2026. Não foi fornecida captura de tela, log ou gravação.
+- **Evidências:** relato da execução manual e duas capturas de tela.
+
+  **Evidência 01 — Tela de login**
+
+  ![Tela inicial do VetCare Lab](evidencias/hu-001/CT-AUT-001-login.png)
+
+  **Evidência 02 — Perfil Administrador**
+
+  ![Painel do Administrador](evidencias/hu-001/CT-AUT-001-perfil-administrador.png)
 - **Limitação:** este registro não comprova autenticação na API ASP.NET Core, autorização de endpoints nem sessão JWT.
 
 ## VAL-HU001-001 — Validação de campos obrigatórios (verificação complementar)
