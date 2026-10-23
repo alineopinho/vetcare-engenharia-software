@@ -52,13 +52,23 @@
 
 - **Limitação:** o resultado é restrito à validação demonstrativa no navegador; não comprova comportamento da API oficial nem segurança da autenticação.
 
+## CT-AUT-003 — Logout e retorno ao login
+
+- **Objetivo:** verificar se a ação de sair encerra a sessão demonstrativa, retorna à tela de login e limpa os campos do formulário.
+- **Procedimento relatado:** entrar como Administrador; acionar **Sair e voltar ao login**; conferir os campos; atualizar a página.
+- **Esperado:** ocultar o painel, mostrar novamente o formulário de login com e-mail e senha vazios; ao atualizar a página, não restaurar a sessão demonstrativa.
+- **Observado:** ao sair da conta de Administrador, a tela de login reapareceu com os campos vazios. Após atualizar a página, os campos permaneceram vazios e não houve relato de restauração do painel.
+- **Resultado:** **Aprovado no laboratório (execução manual relatada).**
+- **Evidência:** relato textual da execução manual em 23/10/2026. **Captura de tela ainda não anexada.**
+- **Limitação:** esse comportamento corresponde à sessão simulada em memória no VetCare Lab; não verifica revogação de JWT nem logout na API do sistema oficial.
+
 ## Situação dos demais testes
 
 | Teste | Situação no sistema oficial | Situação no laboratório |
 | --- | --- | --- |
 | CT-AUT-001 — Login válido | Não executado | Aprovado (relato manual e imagens) |
 | CT-AUT-002 — Credenciais inválidas | Não executado | Aprovado (relato manual e imagens) |
-| CT-AUT-003 — Logout | Não executado | Não registrado nesta execução |
+| CT-AUT-003 — Logout | Não executado | Aprovado (relato manual; print pendente) |
 | CT-AUT-004 — Bloqueio por tentativas | Não executado | Não implementado |
 | CT-AUT-005 — Conta inativa | Não executado | Não implementado |
 | CT-AUT-006 — Acesso por perfil | Não executado | Apresentação de perfis observada; autorização não testada |
@@ -69,19 +79,19 @@
 
 ### O que encontramos?
 
-No VetCare Lab, foram executados manualmente login com contas fictícias, verificação de campos obrigatórios e duas tentativas de credenciais incorretas. Os comportamentos observados foram os esperados, conforme os relatos da execução. As capturas foram vinculadas aos testes CT-AUT-001 e CT-AUT-002. O código demonstrativo está em `07-laboratorio-web/js/app.js` e `index.html`.
+No VetCare Lab, foram executados manualmente login com contas fictícias, validação de campos obrigatórios, duas tentativas de credenciais incorretas e logout demonstrativo. Os comportamentos foram relatados como esperados. Os CT-AUT-001 e CT-AUT-002 possuem referências a capturas de tela; para o CT-AUT-003, a evidência é textual até a inclusão de imagem. O código do laboratório está em `07-laboratorio-web/js/app.js` e `index.html`.
 
 ### Por que isso importa?
 
-Os resultados fornecem evidências de funcionamento dos fluxos demonstrativos e tornam o registro de QA rastreável por caso de teste. **Não comprovam a conformidade do sistema oficial** nem substituem testes da API.
+Os resultados demonstram o comportamento de fluxos de interface associados à HU-001 e mantêm rastreabilidade por caso de teste. **Não comprovam a conformidade do sistema oficial** nem substituem testes da API.
 
 ### O que recomendamos?
 
-Manter os testes reais da API como não executados. Executar e registrar o CT-AUT-003 (logout demonstrativo) e, separadamente, conferir a responsividade e a regressão visual após a divisão do CSS. Só discutir correções na implementação do Mateus quando houver evidência sobre o sistema original.
+Manter os testes reais da API como não executados. Se desejado, anexar um print do retorno ao formulário no CT-AUT-003. Avaliar a regressão visual após a divisão do CSS e, para funcionalidades não implementadas no Lab, evitar registrar resultados como reprovados ou aprovados. Somente discutir correções na implementação do Mateus com evidências do sistema original.
 
 ### Como explicar à equipe?
 
-> “Executamos manualmente os cenários de login válido e credenciais inválidas no VetCare Lab, documentando os resultados e associando capturas de tela. Também verificamos a validação de campos vazios. A aprovação é apenas do protótipo; a autenticação real do VetCare ainda não foi testada.”
+> “Validamos manualmente no VetCare Lab o login fictício, a rejeição de credenciais incorretas e o logout demonstrativo. Os três casos foram aprovados no laboratório, com capturas dos dois primeiros e relato da execução do terceiro. Não testamos ainda a autenticação real do VetCare.”
 
 ## Referências
 
