@@ -1,14 +1,12 @@
 /* VetCare Lab — estilos globais compartilhados */
 :root {
     font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    color: #1a2935;
-    background: #f0f5f8;
+    color: var(--color-text);
+    background: var(--color-background);
     font-synthesis: none;
 }
 
-* {
-    box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 body {
     margin: 0;
@@ -19,79 +17,36 @@ body {
 }
 
 .layout {
-    width: 100%;
-    max-width: 1050px;
-    flex: 1;
-    margin: 0 auto;
+    width: 100%; max-width: 1050px; flex: 1; margin: 0 auto;
     padding: clamp(16px, 3vh, 24px);
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    gap: 7%;
-    align-items: center;
+    gap: 7%; align-items: center;
 }
 
-h2 {
-    font-size: 1.65rem;
-    letter-spacing: -.02em;
-    margin: 8px 0;
-}
+h2 { font-size: 1.65rem; letter-spacing: -.02em; margin: 8px 0; }
+h3 { font-size: .92rem; }
 
-h3 {
-    font-size: .92rem;
-}
-
-.muted,
-.hint {
-    color: #677a86;
-    line-height: 1.55;
-}
-
-.muted {
-    margin-bottom: 25px;
-}
-
-.hint {
-    font-size: .75rem;
-}
+.muted, .hint { color: var(--color-text-muted); line-height: 1.55; }
+.muted { margin-bottom: 25px; }
+.hint { font-size: .75rem; }
 
 .primary {
-    background: #087f87;
-    border: 0;
-    color: white;
-    border-radius: 10px;
-    font: inherit;
-    font-weight: 750;
-    padding: 14px;
-    margin-top: 6px;
-    cursor: pointer;
-    width: 100%;
+    background: var(--color-primary); border: 0;
+    color: var(--color-on-primary);
+    border-radius: 10px; font: inherit; font-weight: 750;
+    padding: 14px; margin-top: 6px; cursor: pointer; width: 100%;
 }
-
-.primary:hover {
-    background: #076c75;
-}
-
-.primary:focus-visible {
-    outline: 3px solid #143b7b;
-    outline-offset: 3px;
-}
+.primary:hover { background: var(--color-primary-hover); }
+.primary:focus-visible { outline: 3px solid var(--color-focus-strong); outline-offset: 3px; }
 
 footer {
-    flex-shrink: 0;
-    text-align: center;
-    font-size: .8rem;
-    color: #7b8c96;
-    padding: 12px 20px;
+    flex-shrink: 0; text-align: center; font-size: .8rem;
+    color: var(--color-text-footer); padding: 12px 20px;
 }
 
 @media (max-width: 760px) {
-    .layout {
-        grid-template-columns: 1fr;
-        gap: 24px;
-        padding: 20px 16px;
-    }
+    .layout { grid-template-columns: 1fr; gap: 24px; padding: 20px 16px; }
 }
 
-[hidden] {
-    display: none !important;
-}
+[hidden] { display: none !important; }

@@ -1,0 +1,37 @@
+/* VetCare Lab — paleta centralizada. Atualize cores aqui. */
+:root {
+    /* Identidade e foco */
+    --color-primary: #087f87;
+    --color-primary-hover: #076c75;
+    --color-on-primary: #ffffff;
+    --color-accent-text: #057c85;
+    --color-accent-border: #0c969b;
+    --color-focus: #128b93;
+    --color-focus-strong: #143b7b;
+
+    /* Textos e superfícies */
+    --color-text: #1a2935;
+    --color-text-muted: #677a86;
+    --color-text-intro: #586b78;
+    --color-text-footer: #7b8c96;
+    --color-text-resources: #526674;
+    --color-background: #f0f5f8;
+    --color-surface: #ffffff;
+    --color-border: #dfe8ed;
+    --color-input-border: #c9d5dc;
+    --color-divider: #e3eaee;
+    --color-panel-shadow: #15394c14;
+
+    /* Informações e contas de demonstração */
+    --color-accent-background: #e3f3f2;
+    --color-accent-content: #45606b;
+    --color-account-background: #f0f8f8;
+    --color-account-border: #cee4e4;
+    --color-account-hover: #def0f0;
+    --color-info-background: #edf5fb;
+    --color-info-border: #c5def1;
+
+    /* Validação de formulário */
+    --color-error: #a3262b;
+    --color-error-background: #fff1f0;
+}

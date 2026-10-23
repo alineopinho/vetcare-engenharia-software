@@ -4,8 +4,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Laboratório demonstrativo de Engenharia de Software do VetCare.">
-  <title>VetCare Lab | HU-001</title>
+  <meta name="description" content="VetCare Lab — ambiente demonstrativo de gestão veterinária com dados fictícios.">
+  <title>VetCare Lab | Acesso</title>
+  <link rel="stylesheet" href="css/colors.css">
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/login.css">
   <script src="js/app.js" type="module"></script>
@@ -13,55 +14,62 @@
 
 <body>
   <main class="layout">
-    <section class="intro" aria-label="Sobre o laboratório">
-      <span class="eyebrow">Engenharia de Software · Protótipo independente</span>
-      <div class="brand"><span class="mark" aria-hidden="true">✚</span>
+    <section class="intro" aria-label="Apresentação do VetCare Lab">
+      <span class="eyebrow">Ambiente de demonstração</span>
+      <div class="brand">
+        <span class="mark" aria-hidden="true">✚</span>
         <h1>VetCare <em>Lab</em></h1>
       </div>
-      <p class="lead">Validação de fluxos e requisitos, começando pela <strong>HU-001 — Autenticar usuário</strong>.</p>
-      <p>Esta demonstração utiliza contas fictícias. Nenhuma senha ou registro clínico real é processado.</p>
-      <div class="info"><strong>O que podemos analisar?</strong><span>Campos obrigatórios, formato de e-mail, mensagens
-          de erro, acesso por perfil e saída da sessão.</span></div>
+      <p class="lead">Um espaço para explorar a rotina de uma clínica veterinária.</p>
+      <p>Entre com um dos perfis disponíveis e conheça as áreas de trabalho do sistema, em uma experiência ilustrativa.
+      </p>
+      <div class="info">
+        <strong>Conheça os diferentes acessos</strong>
+        <span>Administração, atendimento veterinário, área do tutor e apoio administrativo — cada perfil com sua própria
+          visão.</span>
+      </div>
+      <p class="lab-note">Este é um ambiente independente, com contas fictícias e funcionalidades simuladas. Não está
+        conectado ao VetCare original.</p>
     </section>
-    <section class="panel" aria-label="Demonstração interativa">
+
+    <section class="panel" aria-label="Área de acesso">
       <div id="login-view">
-        <p class="overline">Fluxo demonstrativo</p>
-        <h2>Entrar no laboratório</h2>
-        <p class="muted">Selecione uma conta de demonstração ou digite dados de teste.</p>
+        <p class="overline">Área de acesso</p>
+        <h2>Bem-vindo de volta</h2>
+        <p class="muted">Acesse sua área de demonstração.</p>
         <form id="login-form" novalidate>
           <label for="email">E-mail</label>
-          <input id="email" name="email" type="email" autocomplete="off" placeholder="usuario@exemplo.test" required>
+          <input id="email" name="email" type="email" autocomplete="off" placeholder="seuemail@exemplo.test" required>
           <label for="password">Senha</label>
-          <input id="password" name="password" type="password" autocomplete="off"
-            placeholder="Digite sua senha de teste" required>
+          <input id="password" name="password" type="password" autocomplete="off" placeholder="Digite a senha" required>
           <p id="feedback" class="feedback" role="alert" aria-live="polite" hidden></p>
           <button class="primary" type="submit">Entrar</button>
         </form>
         <div class="demo-users">
-          <h3>Contas fictícias para experimentar</h3>
+          <h3>Experimentar com uma conta fictícia</h3>
+          <p class="hint">Escolha um perfil para preencher automaticamente os dados de acesso.</p>
           <div class="accounts">
             <button type="button" class="account" data-user="admin">Administrador</button>
             <button type="button" class="account" data-user="vet">Veterinário</button>
             <button type="button" class="account" data-user="tutor">Tutor</button>
             <button type="button" class="account" data-user="apoio">Apoio administrativo</button>
           </div>
-          <p class="hint">A seleção preenche os campos automaticamente. Este é um simulador, não uma autenticação
-            segura.</p>
         </div>
       </div>
-      <section id="dashboard-view" hidden aria-label="Painel de demonstração">
-        <p class="overline">Demonstração de navegação</p>
+
+      <section id="dashboard-view" hidden aria-label="Área do usuário">
+        <p class="overline">Minha área</p>
         <h2 id="welcome">Bem-vindo!</h2>
         <p id="profile-message" class="muted"></p>
-        <div class="demo-banner">Estado de sessão mantido somente na memória desta página. Recarregar a página encerra a
-          demonstração.</div>
-        <h3>Funcionalidades previstas para o laboratório</h3>
+        <div class="demo-banner">Você está explorando uma conta fictícia. Os recursos abaixo representam possibilidades
+          da área selecionada, sem conexão com dados clínicos reais.</div>
+        <h3>Áreas disponíveis neste perfil</h3>
         <ul id="resources"></ul>
-        <button type="button" id="logout" class="primary">Sair e voltar ao login</button>
+        <button type="button" id="logout" class="primary">Sair da conta</button>
       </section>
     </section>
   </main>
-  <footer>VetCare Lab · Estudo independente · Não conectado ao VetCare oficial</footer>
+  <footer>VetCare Lab · Ambiente independente de demonstração · Dados fictícios</footer>
 </body>
 
 </html>
