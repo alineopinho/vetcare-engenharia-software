@@ -50,3 +50,108 @@ footer {
 }
 
 [hidden] { display: none !important; }
+
+/* Depois do login, o laboratório vira uma área de trabalho em largura total.
+   A tela de entrada continua usando o layout original de duas colunas. */
+body:has(#dashboard-view:not([hidden])) .layout {
+    display: block;
+    max-width: 1200px;
+    padding: 32px 24px;
+}
+
+body:has(#dashboard-view:not([hidden])) .intro {
+    display: none;
+}
+
+body:has(#dashboard-view:not([hidden])) .panel {
+    width: 100%;
+    padding: clamp(24px, 3vw, 42px);
+}
+
+/* Resumo do perfil à esquerda; módulo de pacientes à direita. */
+#dashboard-view:not([hidden]) {
+    display: grid;
+    grid-template-columns: minmax(200px, 260px) minmax(0, 1fr);
+    gap: 14px 32px;
+    align-items: start;
+}
+
+#dashboard-view:not([hidden]) > :not(#pets-view) {
+    grid-column: 1;
+    min-width: 0;
+}
+
+#dashboard-view:not([hidden]) > .muted {
+    margin-bottom: 0;
+}
+
+#dashboard-view:not([hidden]) > .demo-banner {
+    margin: 12px 0;
+}
+
+#dashboard-view:not([hidden]) > #pets-view {
+    grid-column: 2;
+    grid-row: 1 / span 8;
+    min-width: 0;
+    margin-top: 0;
+    padding-top: 0;
+    padding-left: 32px;
+    border-top: 0;
+    border-left: 1px solid var(--color-divider);
+}
+
+#dashboard-view:not([hidden]) > #logout {
+    align-self: end;
+}
+
+@media (max-width: 850px) {
+    body:has(#dashboard-view:not([hidden])) .layout {
+        padding: 18px 12px;
+    }
+    #dashboard-view:not([hidden]) {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 12px;
+    }
+    #dashboard-view:not([hidden]) > :not(#pets-view),
+    #dashboard-view:not([hidden]) > #pets-view {
+        grid-column: 1;
+        grid-row: auto;
+    }
+    #dashboard-view:not([hidden]) > #pets-view {
+        padding: 24px 0 0;
+        margin-top: 12px;
+        border-left: 0;
+        border-top: 1px solid var(--color-divider);
+    }
+}
+
+/* Navegação interna do demonstrador */
+body:has(#dashboard-view:not([hidden])) .layout { max-width: 1160px; }
+#dashboard-view:not([hidden]) { display: block; }
+#dashboard-home { max-width: 650px; margin-inline: auto; }
+body.patients-open .panel { width: 100%; }
+body.patients-open #dashboard-view:not([hidden]) > #pets-view:not([hidden]) {
+  display: block;
+  grid-column: auto;
+  grid-row: auto;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+#open-patients { margin: 12px 0 20px; }
+#back-dashboard { margin-bottom: 14px; }
+
+/* Ajuste pontual: apenas a posição do botão Sair da conta. */
+#dashboard-view:not([hidden]) {
+    position: relative;
+    padding-top: 58px;
+}
+#dashboard-view:not([hidden]) > #logout {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: auto;
+    margin: 0;
+    padding: 10px 16px;
+    font-size: .85rem;
+}

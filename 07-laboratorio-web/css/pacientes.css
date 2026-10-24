@@ -1,0 +1,30 @@
+/* HU-003 — módulo de pacientes (apresentação; cores vêm de colors.css) */
+#pets-view { margin-top: 22px; border-top: 1px solid var(--color-divider); padding-top: 20px; }
+#pet-form { display: grid; gap: 10px; }
+#pet-form label { font-size: .87rem; font-weight: 650; }
+#pet-form input, #pet-form select { width: 100%; padding: 11px 12px; font: inherit; border: 1px solid var(--color-input-border); border-radius: 9px; background: var(--color-surface); color: var(--color-text); }
+#pet-form input:focus-visible, #pet-form select:focus-visible { outline: 2px solid var(--color-focus); }
+.pet-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.pet-form-grid > label { display: grid; gap: 6px; }
+/* #pet-list agora é um <tbody>, não uma lista de cartões.
+   display:grid no tbody desmonta o alinhamento das colunas da tabela. */
+.pet-table #pet-list { display: table-row-group; }
+.pet-table #pet-list tr { display: table-row; }
+.pet-table #pet-list td { display: table-cell; }
+.pet-card { border: 1px solid var(--color-border); border-radius: 12px; padding: 14px; background: var(--color-surface); }
+.pet-card p { margin: 7px 0; }
+.pet-actions { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 12px; }
+.small-action { border: 1px solid var(--color-account-border); background: var(--color-account-background); padding: 9px 11px; border-radius: 8px; font: inherit; font-size: .81rem; cursor: pointer; color: var(--color-text); }
+.small-action:hover { background: var(--color-account-hover); }
+.small-action:focus-visible { outline: 3px solid var(--color-focus-strong); }
+.pet-feedback { background: var(--color-accent-background); color: var(--color-accent-content); padding: 12px; border-radius: 9px; }
+.pet-feedback.is-error { color: var(--color-error); background: var(--color-error-background); }
+.pet-secondary { border: 1px solid var(--color-border); background: var(--color-surface); color: var(--color-text); padding: 12px; border-radius: 10px; cursor: pointer; }
+.pet-note { margin-top: 12px; font-size: .78rem; color: var(--color-text-muted); }
+@media(max-width: 510px) { .pet-form-grid { grid-template-columns: 1fr; } }
+
+.pet-table-wrap { overflow-x: auto; width: 100%; margin-top: 14px; }
+.pet-table { width: 100%; min-width: 700px; border-collapse: collapse; font-size: .88rem; }
+.pet-table th, .pet-table td { padding: 12px 10px; text-align: left; border-bottom: 1px solid var(--color-divider); vertical-align: top; }
+.pet-table th { color: var(--color-text-muted); font-size: .79rem; }
+.pet-table .pet-actions { margin: 0; }
