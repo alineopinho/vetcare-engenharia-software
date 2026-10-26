@@ -1,100 +1,130 @@
-# VetCare — Análise preliminar de arquitetura
+# VetCare — Análise documental da arquitetura e confronto com a implementação (AS-IS)
 
-**Status:** diagnóstico documental e inspeção estática inicial; não aprovado pela equipe  
-**Data:** 23/10/2026  
-**Objetivo:** comparar a arquitetura acadêmica registrada em junho/2026 com a implementação de referência no repositório `Rozeti/ProjetoVetCare`, sem alterar os documentos originais nem presumir que todo o código esteja correto.
+**Documento de origem:** `01-documentacao/3_DocumentoArquiteturaSoftware_VetCare.pdf` — versão 4.0, 28/06/2026, 18 páginas.  
+**Atualização da análise:** 26/10/2026 (revisão do arquivo iniciado em 23/10/2026).  
+**Referência de código:** [`Rozeti/ProjetoVetCare`](https://github.com/Rozeti/ProjetoVetCare), versão consultada na revisão.  
+**Status:** diagnóstico técnico preliminar, **sem compilação, execução, homologação nem aprovação da equipe**.
 
-## 1. Fontes e critérios
+## 1. Objetivo e método
 
-| ID | Fonte | Referência |
+Analisar a coerência interna da arquitetura acadêmica, confrontar suas decisões verificáveis com a estrutura de código existente e distinguir **estado documentado (baseline de junho)**, **estado implementado (inspeção estática)** e **decisões futuras propostas**. Os documentos acadêmicos originais não foram modificados.
+
+Fontes documentais complementares: Documento de Visão (10/06/2026), Documento de Requisitos (18/06/2026), `02-analise-documental/analise-visao.md`, `02-analise-documental/analise-requisitos.md` e rastreabilidades da pasta `03-rastreabilidade/`.
+
+**Regra de classificação:** diferença de tecnologia ou ampliação de escopo não é, por si, defeito de execução. Declarações feitas apenas no documento não provam que um mecanismo tenha sido implementado. Evidência estática de código não comprova funcionamento operacional.
+
+## 2. Pontos fortes da arquitetura original
+
+- Organiza a descrição segundo perspectivas inspiradas no **modelo 4+1** e explicita separação entre apresentação, controle, regras de negócio, persistência e dados (pp. 4, 9–13).
+- Define limites iniciais de escopo, incluindo exclusões explícitas de faturamento, pagamentos e IA diagnóstica (p. 5).
+- Relaciona decisões a atributos de qualidade: segurança, privacidade, confiabilidade, desempenho, portabilidade, disponibilidade e escalabilidade (pp. 7–8).
+- Identifica entidades clínicas e seus vínculos, incluindo Tutor, Paciente, Tratamento, Prontuário, Avaliação, Sessão e Atendimento (pp. 9–10, 16–17).
+- Apresenta diagramas de classes, camadas, sequência, implantação e modelo de dados. **Os desenhos ainda exigem revisão visual e comparação detalhada, não realizada nesta atualização textual.**
+
+## 3. Matriz de correspondência — arquitetura × código
+
+| Elemento | Previsão no documento original | Evidência na implementação do Mateus | Classificação |
+| --- | --- | --- | --- |
+| Back-end | Java 21, Spring Boot 3.x, Spring MVC/Security (pp. 11–15) | `VetCare.API/VetCare.API.csproj` usa `Microsoft.NET.Sdk.Web` e `net10.0`; `Program.cs` registra controllers | **Divergência tecnológica confirmada por inspeção** |
+| Front-end web | React com TypeScript, interface responsiva (pp. 7, 11–12) | `VetCare.Web/package.json` contém React 19, TypeScript, Vite e Tailwind | **Correspondência geral** |
+| API e serviços | Separação entre controllers, serviços e repositórios (pp. 11–13) | Diretórios `Controllers`, `UseCases`, `Data`, `Security` e `Services`; injeção de dependências em `Program.cs` | **Correspondência conceitual, não identidade com MVC Spring** |
+| Persistência | PostgreSQL, JPA/Hibernate, JDBC; documento indica PostgreSQL 16 (pp. 11, 15–16) | `Program.cs` usa `UseNpgsql`; `AppDbContext` configura entidades com EF Core | **Banco relacional coerente; ORM e driver diferentes** |
+| Segurança | JWT, hash de senhas, controle por perfil via Spring Security (p. 7) | ASP.NET Core JWT Bearer; verificação de contas ativas; atributos de autorização nos controllers examinados | **Mecanismos identificados, eficácia pendente de testes** |
+| Perfis | Quatro perfis no documento de arquitetura (p. 5) | `AppDbContext` inclui Apoio; controllers diferenciam permissões | **Correspondência na arquitetura; enumeração inconsistente com RN-005/Visão** |
+| Plataforma cliente | Navegador responsivo (pp. 4, 7, 15) | `VetCare.Web` e `VetCare.Mobile` com Expo/React Native | **Canal móvel adicional identificado no código** |
+| Integridade | Histórico clínico preservado, controle transacional e soft delete sensível (p. 7) | `VersaoRegistroClinico` e arquivamento de versões para avaliações/atendimentos; exclusão de pacientes condicionada a registros | **Implementação parcial identificada; cobertura e atomicidade não verificadas** |
+| Operação e disponibilidade | Health checks, backup diário, monitoramento e 99,5% (pp. 7–8, 18) | `Program.cs` registra health check EF Core | **Health check identificado; backup, monitoramento e SLA não demonstrados** |
+| Multi-tenant | Evolução futura com isolamento de clínicas (pp. 5, 7, 16) | Entidades e consultas examinadas incluem `ClinicaId`; verificações por clínica em casos de uso | **Preparação estrutural identificada; isolamento integral não auditado** |
+
+### Nota sobre a expressão MVC
+
+O documento utiliza **MVC** como referência para a separação das responsabilidades, porém a implementação corrente é uma **API ASP.NET Core consumida por front-end React**, não uma interface servida necessariamente por *Razor Views*. A atualização da arquitetura deve representar corretamente **cliente web/mobile → API → casos de uso → repositórios/EF Core → PostgreSQL**, sem pressupor um MVC web clássico. Esse desenho é uma síntese sustentada pelos componentes inspecionados, não um diagrama de implantação validado.
+
+## 4. Registro de achados
+
+### ARQ-001 — Troca de stack não refletida no documento
+
+- **Fonte:** pp. 9, 11–16: Java/Spring, JPA/Hibernate, JDBC.
+- **Código:** `VetCare.API.csproj`, `Program.cs`, `AppDbContext.cs` apontam para C#/.NET 10, ASP.NET Core, EF Core e Npgsql.
+- **Impacto:** diagramas, arquitetura lógica, implantação, decisões de segurança e orientação para manutenção ficam desatualizados.
+- **Encaminhamento:** registrar a decisão de mudança e, **em fase futura de revisão aprovada**, atualizar representações arquiteturais. Não recomendar retorno a Java apenas para coincidir com o PDF.
+- **Estado:** divergência tecnológica comprovada por inspeção.
+
+### ARQ-002 — Perfis de acesso não uniformes entre artefatos
+
+- **Fonte:** Arquitetura p. 5 especifica Administrador, Veterinário, Tutor e Apoio; Visão e RN-005 enfatizam três perfis em determinadas seções.
+- **Código:** consultas e escrita têm autorização segmentada conforme perfil nos controllers e casos de uso examinados.
+- **Impacto:** critérios de autorização por operação e por titularidade do paciente precisam de uma matriz aprovada.
+- **Encaminhamento:** conservar Apoio como ator **documentado na Arquitetura**, esclarecer escopo e manter relação com `03-rastreabilidade/rn-005-controle-acesso-as-is.md`.
+- **Estado:** inconsistência documental; não é defeito de autorização confirmado.
+
+### ARQ-003 — Diagramas de sequência/camadas/implantação com tecnologia histórica
+
+- **Fonte:** pp. 12, 14 e 15 contêm representações baseadas em Spring e JDBC.
+- **Impacto:** representações não descrevem fielmente a implementação inspecionada.
+- **Encaminhamento:** posteriormente criar versões **AS-IS** com classes reais e manter as versões acadêmicas como baseline; diagramas **TO-BE** devem ser rotulados como propostas.
+- **Estado:** atualização necessária após engenharia reversa detalhada.
+
+### ARQ-004 — Aplicativo móvel e ampliação de escopo
+
+- **Fonte:** escopo e implantação originais enfatizam aplicação web responsiva (pp. 4–5, 15).
+- **Código:** `VetCare.Mobile/package.json` identifica Expo/React Native, navegação e notificações; `Program.cs` contempla política CORS para cliente móvel.
+- **Impacto:** documentação precisa explicitar canais, fluxos, autenticação, notificações, configuração e testes por plataforma.
+- **Encaminhamento:** equipe confirmar quais funcionalidades mobile integram o escopo aprovado. **Não presumir que web responsiva e app nativo são equivalentes.**
+- **Estado:** extensão concreta no código; decisão de produto pendente.
+
+### ARQ-005 — Modelo de dados e proteção de registros
+
+- **Fonte:** pp. 10 e 17 (diagramas), p. 16 (relacionamentos); p. 7 (integridade e soft delete).
+- **Código:** `AppDbContext.cs` define mapeamentos; `Pet.TutorId` obrigatório; registro de versões clínicas; `PetRepository.PossuiRegistrosClinicos()` protege várias categorias, porém não verifica diretamente alergias/condições.
+- **Impacto:** integridade referencial e fronteira do que constitui histórico protegido demandam investigação.
+- **Encaminhamento:** cotejar entidades, migrations e restrições efetivas do banco com RN-001/RN-004; classificar alergias/condições com o cliente antes de declarar defeito.
+- **Estado:** evidência estrutural parcial; revisão de modelos e testes reais pendentes.
+
+### ARQ-006 — Dimensionamento e metas de operação sem evidência de validação
+
+- **Fonte:** p. 18 prevê média de **1.000 usuários simultâneos**, pico de **3.000**, cerca de **150 requisições/s**, **500 GB** inicialmente e incremento de **20 GB/mês**; p. 18 prevê 99,5% de disponibilidade mensal, backup diário e ausência de perda de registros confirmados.
+- **Análise:** a documentação apresenta estimativas, mas não mostra medições, distribuição de carga, quantidade de clínicas, perfil de armazenamento ou justificativa para os números.
+- **Impacto:** dimensionar infraestrutura ou afirmar cumprimento do RNF-004/005 a partir desses valores seria prematuro; backup diário sozinho não garante **RPO zero**.
+- **Encaminhamento:** solicitar premissas e validar números; definir cenários de carga, RPO/RTO, testes de restauração e monitoramento operacional.
+- **Estado:** risco de validação de requisitos não funcionais, **sem falha operacional demonstrada**.
+
+### ARQ-007 — Serviços externos e mecanismos ainda não comprovados
+
+- **Fonte:** p. 11 prevê S3/MinIO, SMTP e WebSocket; p. 7 contempla Auto-Save e p. 8 backup/monitoramento.
+- **Código verificado:** `Program.cs` registra componentes de e-mail, push e serviços em segundo plano, mas esta revisão não comprovou a implantação de S3/MinIO, WebSocket, Auto-Save ou rotina de backup.
+- **Encaminhamento:** inspecionar serviços e configuração e executar provas específicas antes de atribuir conformidade.
+- **Estado:** verificação pendente; ausência de prova **não** significa ausência de funcionalidade.
+
+### ARQ-008 — Manutenibilidade e processo colaborativo
+
+- **Fonte:** requisito de facilidade de manutenção (p. 7); arquitetura por camadas.
+- **Análise:** há classes de caso de uso com múltiplas operações, mas não foram calculadas métricas de coesão/acoplamento nem realizados testes de manutenção.
+- **Encaminhamento:** avaliar módulos criticamente antes de propor refatoração, com revisão por funcionalidade e testes de regressão.
+- **Estado:** hipótese de melhoria; nenhum defeito específico declarado.
+
+## 5. Rastreabilidade arquitetural inicial
+
+| Requisito(s) | Componentes observados | Lacuna de comprovação |
 | --- | --- | --- |
-| VIS | Documento de Visão (10/06/2026) | `01-documentacao/1_DocumentoVisao_VetCare.pdf`, especialmente pp. 3, 5–6 |
-| REQ | Documento de Requisitos de Software (18/06/2026) | `01-documentacao/2_DocumentoRequisitosSoftware_VetCare.pdf`, pp. 3, 5–6, 16–20 |
-| ARQ | Documento de Arquitetura de Software v4.0 (28/06/2026) | `01-documentacao/3_DocumentoArquiteturaSoftware_VetCare.pdf`, pp. 5, 7, 10–17 |
-| COD | Implementação original de referência | `Rozeti/ProjetoVetCare`, arquivos inspecionados: `VetCare.API/VetCare.API.csproj`, `VetCare.API/Program.cs`, `VetCare.API/Data/AppDbContext.cs`, `VetCare.Web/package.json` |
+| HU-001 / RN-005 / RN-006 / RNF-002 | `Program.cs`, controllers, segurança e casos de uso | Autorização e bloqueio em execução |
+| HU-003 / RN-001 | `PetsController`, `GerenciarPacientesUseCase`, `Pet`, `AppDbContext` | Persistência e transferência de tutor em banco |
+| HU-007 / HU-008 / RN-004 | Casos de uso de avaliação/atendimento, `VersaoRegistroClinico` | Atomicidade de versões e proteção integral de registros |
+| HU-011 / RNF-003 | `ConsultarProntuarioUseCase`, autorização por paciente | Resposta por perfil e ausência de exposição indevida |
+| RNF-004 / RNF-007 | Índices EF Core e estratégias descritas | Testes de carga e escala nas premissas definidas |
+| RNF-005 | Health check do banco | Disponibilidade, backup, restauração, perda de dados |
 
-**Limites:** nesta etapa não houve compilação, execução da API, teste de migração, inspeção completa das entidades, nem comparação linha a linha do projeto. Alterações de código posteriores à consulta podem mudar as conclusões. A divergência entre artefatos **não é automaticamente um bug**.
+## 6. Decisões a validar com a equipe
 
-## 2. Arquitetura documentada × implementação inspecionada
+1. Registrar formalmente o uso atual de .NET/C# e a evolução em relação ao desenho Java/Spring.
+2. Consolidar os quatro perfis e autorizações específicas, inclusive edição limitada de cadastro pelo Tutor **como proposta ainda não aprovada**.
+3. Delimitar o app móvel, fluxo de identidade e operações suportadas.
+4. Definir os registros clínicos protegidos por RN-004 e estratégia de histórico, transações e retenção.
+5. Revisar as premissas de 1.000–3.000 usuários simultâneos, 150 req/s e crescimento de armazenamento.
+6. Definir requisitos operacionais verificáveis: backups, restauração, RPO/RTO, monitoramento e dependências externas.
 
-| Aspecto | Arquitetura documentada | Evidência do código existente | Resultado |
-| --- | --- | --- | --- |
-| Back-end | Java 21, Spring Boot 3.x, Spring MVC e Spring Security (ARQ pp. 7, 11, 15) | `VetCare.API.csproj` usa `Microsoft.NET.Sdk.Web`, `net10.0`; `Program.cs` registra controllers e autenticação JWT | **Divergência confirmada**; documentar decisão de migração tecnológica |
-| Interface web | React + TypeScript (ARQ pp. 7, 11–12) | `VetCare.Web/package.json` usa React, TypeScript, Vite e Tailwind | **Correspondência parcial**; detalhar versões e ferramentas atuais |
-| Persistência | PostgreSQL com JPA/Hibernate, conexão JDBC (ARQ pp. 11–12, 15–16) | `Program.cs`: `UseNpgsql(...)`; `AppDbContext.cs`: EF Core com entidades `DbSet` | **Divergência do ORM**; PostgreSQL preservado |
-| Segurança | JWT, controle de acesso por perfil; documento referencia Spring Security (ARQ p. 7) | `Program.cs` usa autenticação JWT do ASP.NET Core | **Implementação diferente**; eficácia das regras pendente de testes |
-| Papéis de acesso | VIS descreve três na declaração da visão (p. 3), mas inclui equipe de apoio como parte interessada (p. 4); REQ RN-005 enumera três (p. 16); ARQ lista quatro (p. 5) | `AppDbContext` possui `ApoiosAdministrativos` | **Definição inconsistente**; matriz de permissões depende de validação |
-| Modelo de dados | MER acadêmico (ARQ p. 17) | `AppDbContext` mantém entidades e mapeamentos EF Core | **Comparação detalhada ainda pendente** |
-| App móvel | VIS e REQ tratam principalmente de web responsiva (VIS p. 6; REQ RNF-006 p. 19) | O plano de integração apresenta módulo móvel Expo; não revisado neste diagnóstico | **Mudança potencial de escopo**; confirmar entrega móvel atual e requisitos próprios |
+## 7. Próxima etapa
 
-## 3. Registro de divergências e oportunidades
+Com as análises da **Visão**, dos **Requisitos** e da **Arquitetura** disponíveis em `02-analise-documental/`, fechar uma **revisão cruzada dos três artefatos** antes de expandir a rastreabilidade do código. Os diagramas acadêmicos permanecem preservados; diagramas de implementação exigem engenharia reversa específica.
 
-### ARQ-001 — Stack tecnológico desatualizado
-
-- **Evidência:** ARQ pp. 7, 9, 11–16 menciona Java, Spring, JPA e JDBC; código inspecionado utiliza .NET 10, C#, ASP.NET Core e EF Core/Npgsql.
-- **Impacto:** diagramas de camadas, implantação e sequência podem induzir a interpretação incorreta da implementação.
-- **Proposta:** produzir uma arquitetura **proposta/atualizada**, com registro da mudança de stack e componentes reais; preservar o PDF original.
-- **Status:** divergência confirmada; proposta não aprovada.
-
-### ARQ-002 — Quatro perfis e autorização
-
-- **Evidência:** VIS p. 3 e REQ RN-005 (p. 16) tratam de Administrador, Veterinário e Tutor; ARQ p. 5 inclui Apoio Administrativo. A VIS p. 4 já cita a equipe de apoio, o que exige interpretação cuidadosa.
-- **Impacto:** autorização, menus, acesso a dados e casos de teste.
-- **Proposta:** tabela de permissões por perfil e operação (visualizar, cadastrar, editar, cancelar, anexar etc.), vinculada às HU e RN.
-- **Status:** esclarecimento necessário, não defeito comprovado.
-
-### ARQ-003 — Diagramas de fluxo desatualizados
-
-- **Evidência:** diagrama de sequência de avaliação clínica (ARQ p. 14) utiliza `AvaliacaoController`, `AvaliacaoService`, repositórios Spring Data JPA e PostgreSQL; diagrama de camadas na p. 12 e implantação na p. 15 mantêm Spring.
-- **Impacto:** rastreabilidade entre projeto arquitetural, implementação e testes.
-- **Proposta:** redesenhar apenas após inspecionar controllers, casos de uso, repositórios e resposta HTTP reais; distinguir fluxo atual e fluxo recomendado.
-- **Status:** pendente de engenharia reversa detalhada.
-
-### ARQ-004 — Escopo do portal e do aplicativo
-
-- **Evidência:** VIS/REQ descrevem aplicação web responsiva; código/plano de commits incluem aplicativo móvel.
-- **Impacto:** esforço, arquitetura de autenticação, navegação, distribuição e critérios de aceite.
-- **Proposta:** registrar decisão de ampliação de escopo, funcionalidades compartilhadas e requisitos específicos do aplicativo.
-- **Status:** decisão de produto a confirmar com a equipe.
-
-### ARQ-005 — Modelagem e migrações de dados
-
-- **Evidência:** MER no ARQ p. 17; no código há `AppDbContext` usando Entity Framework Core.
-- **Impacto:** esquema físico, cardinalidades, chaves, restrições e scripts de evolução.
-- **Proposta:** recuperar o modelo efetivo de entidades, `OnModelCreating` e migrations; confrontar com RN-001, RN-004, RN-007 e RNF-003; produzir **modelo atual**, **modelo proposto** e **plano de migração** (sem executar alterações no banco oficial).
-- **Status:** análise ainda não executada.
-
-### ARQ-006 — Manutenibilidade e processo colaborativo
-
-- **Evidência:** discussões da equipe indicam classes de caso de uso com múltiplas operações e distribuição de commits por arquivos; risco de mudanças concorrentes.
-- **Impacto:** revisão, integração e testes de regressão.
-- **Proposta:** investigar coesão/acoplamento e dependências antes de separar classes; adotar PR por funcionalidade, responsabilidade clara e commits lógicos, sem prometer eliminação de conflitos apenas pela divisão de arquivos.
-- **Status:** hipótese de melhoria; não foi demonstrado um conflito concreto neste registro.
-
-## 4. Rastreabilidade inicial — foco em autenticação e usuários
-
-| Requisito | Expectativa documentada | Artefatos a verificar | Evidência/estado |
-| --- | --- | --- | --- |
-| HU-001, RN-005, RN-006 | Autenticação, autorização e bloqueio após cinco tentativas | DTOs, casos de uso, controller, configurações JWT, testes de login e bloqueio | Revisão de QA anterior; testes funcionais pendentes |
-| HU-002, RN-007 | Cadastro, edição, inativação, redefinição e unicidade do e-mail | `GerenciarUsuariosUseCase`, repositórios, `AppDbContext`, migrations, controllers e testes | Análise estática preliminar; sem validação end-to-end |
-| RNF-002, RNF-003 | Controle de acesso e separação de dados clínicos | Authorization policies, acesso por clínica e paciente, respostas da API e testes | Pendente de inspeção e execução |
-
-## 5. Entregáveis propostos (não aprovados)
-
-1. **Diagrama de componentes do estado atual**: Web/React, aplicativo móvel, API ASP.NET Core, camadas de casos de uso e repositórios, PostgreSQL e integrações externas efetivamente verificadas.
-2. **Diagrama de sequência da autenticação**: rastrear HTTP → controller → caso de uso → repositório/segurança → resposta, incluindo falhas e bloqueios.
-3. **Matriz de permissões por perfil**, validada com Camila e equipe.
-4. **Modelo físico de dados recuperado** de EF Core + migrations, acompanhado de riscos e propostas separadas.
-5. **Protótipo HTML/CSS/JS** apenas para consulta e exploração da análise; conexão com banco sempre mediada por API autorizada, em fase posterior.
-
-## 6. Decisões a obter da equipe
-
-- Confirmar formalmente C#/.NET 10 como stack de referência para documentação e entrega.
-- Confirmar se o aplicativo móvel faz parte do escopo aprovado e em quais HU.
-- Aprovar lista de perfis, especialmente permissões de Apoio Administrativo.
-- Definir responsáveis/revisores pelas funcionalidades e pelas migrations compartilhadas.
-- Validar os diagramas do **estado atual** antes de propor refatoração.
-
-## 7. Próximo passo
-
-Inspecionar `Program.cs`, controllers, casos de uso e `AppDbContext` com maior profundidade para produzir o primeiro diagrama de componentes **AS-IS** (estado atual). Só depois elaborar diagramas **TO-BE** (proposta) e desenho do mini site. Não alterar os PDFs originais ou o repositório de entrega da equipe durante essa investigação.
+**Limite final:** conclusões acima resultam de leitura documental e inspeção estática de arquivos. Não foram executados compilação, chamadas HTTP, migrações, banco de dados, testes de carga nem validação de infraestrutura.
