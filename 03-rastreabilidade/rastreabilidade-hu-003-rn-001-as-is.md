@@ -1,69 +1,101 @@
-# VetCare — HU-003 e RN-001 | Investigação e rastreabilidade AS-IS
+# VetCare — HU-003, HU-013, RN-001 e RN-004 | Rastreabilidade AS-IS e decisões propostas
 
-**Data:** 23/10/2026  
-**Natureza:** investigação documental e inspeção estática da implementação de referência.  
-**Estado:** preliminar; não corresponde à execução de testes nem à homologação do sistema original.
+**Análise inicial:** 23/10/2026  
+**Atualização:** 26/10/2026  
+**Escopo:** documento acadêmico original, esclarecimentos da equipe e inspeção estática de `Rozeti/ProjetoVetCare`.  
+**Estado:** análise parcial; **não é homologação nem evidência de execução da API original**.
 
-## 1. Objetivo e referências
+## 1. Referências e distinção das fontes
 
-Verificar a correspondência entre a **HU-003 — Gerenciar pacientes**, a **RN-001 — Associação Tutor–Paciente** e a implementação do projeto `Rozeti/ProjetoVetCare`.
+- **Documento original:** `01-documentacao/2_DocumentoRequisitosSoftware_VetCare.pdf`, HU-003 (pp. 6–7), HU-013, RN-001 e RN-004 (p. 16).
+- **Implementação inspecionada:** `VetCare.API/Controllers/PetsController.cs`, `VetCare.API/UseCases/GerenciarPacientesUseCase.cs`, `VetCare.API/Data/PetRepository.cs`, `VetCare.API/Models/Pet.cs`, `VetCare.API/Data/AppDbContext.cs` e `VetCare.Web/src/pages/MeusPets.tsx`.
+- **Esclarecimentos compartilhados pela integrante da equipe (26/10/2026):** Tutor pode cadastrar seus animais; clínica atende predominantemente cães; deseja-se que o cadastro específico de cão não exija seleção de espécie.
+- **Proposta em análise (26/10/2026):** Tutor pode editar **somente dados cadastrais autorizados** de seus animais, mas **não pode excluir**. Escopo dos campos ainda precisa de confirmação pelo cliente.
 
-Documentação de referência: `01-documentacao/2_DocumentoRequisitosSoftware_VetCare.pdf`, HU-003 (pp. 6–7), RN-001 (p. 16), e RN-004 (integridade do prontuário). Os PDFs originais permanecem inalterados.
+**Importante:** a predominância de cães **não significa exclusividade**. Não instituir proibição global de outras espécies sem decisão explícita. Os documentos acadêmicos em PDF permanecem inalterados.
 
-Arquivos da implementação inspecionados:
+## 2. HU-003 — critérios de aceitação do documento original
 
-- `VetCare.API/Controllers/PetsController.cs`
-- `VetCare.API/UseCases/GerenciarPacientesUseCase.cs`
-- `VetCare.API/Security/AcessoAoPaciente.cs`
-- `VetCare.API/UseCases/ConsultarProntuarioUseCase.cs` (verificação de acesso ao prontuário)
-
-## 2. Critérios de aceite da HU-003
-
-| Critério original | Evidência no código | Classificação | O que ainda verificar |
+| Critério | Evidência na implementação de referência | Classificação | Verificação pendente |
 | --- | --- | --- | --- |
-| **CA-1 — Cadastro vinculado a tutor:** Administrador cadastra pet e associa a um único tutor | `GerenciarPacientesUseCase.Cadastrar()` exige `dto.TutorId`, consulta o tutor e atribui `Pet.TutorId` | Correspondência identificada por inspeção | Persistência real; vínculo único no modelo de dados e no banco |
-| **CA-2 — Tutor obrigatório:** impedir cadastro sem tutor | `Cadastrar()` rejeita `Guid.Empty`; também rejeita tutor inexistente ou de outra clínica | Correspondência identificada por inspeção | Resposta HTTP e mensagem na interface, inclusive campos omitidos ou inválidos |
-| **CA-3 — Edição preservando histórico:** editar dados sem perder o histórico clínico | `Atualizar()` modifica os campos do mesmo `Pet`, incluindo `TutorId`, sem criar novo paciente nem excluir o prontuário nesse fluxo | Correspondência estrutural aparente | Testar alterações de tutor e confirmar histórico intacto no banco e nas consultas |
-| **CA-4 — Exclusão com histórico:** impedir remoção de paciente com registros, permitindo inativação | `Excluir()` chama `_pets.PossuiRegistrosClinicos(id)` e retorna conflito quando há registros; `AlterarStatus()` altera `Ativo` | Correspondência identificada por inspeção | Definição exata de “registros clínicos” no repositório e comportamento com diferentes tipos de histórico |
+| CA-1 — cadastro associado a um tutor | `Cadastrar()` valida `TutorId`; `Pet.TutorId` e relacionamento EF Core estão presentes | Correspondência estrutural | Persistência real e retorno da API |
+| CA-2 — impedir cadastro sem tutor | `Cadastrar()` rejeita identificador vazio, tutor inexistente ou de outra clínica | Correspondência por inspeção | Teste de API, mensagem e status HTTP |
+| CA-3 — edição preserva histórico | `Atualizar()` mantém o identificador do `Pet` e altera inclusive `TutorId`, sem apagar prontuário no fluxo | Correspondência estrutural, não comprovada em execução | Alterar tutor com registros reais e comparar antes/depois |
+| CA-4 — impedir exclusão com registros e permitir inativação | `Excluir()` consulta `PossuiRegistrosClinicos()`; `AlterarStatus()` modifica `Ativo` | Correspondência parcial sob investigação | Cobertura dos tipos clínicos e testes de banco |
 
-**Observação:** o fluxo implementado permite a exclusão efetiva quando `PossuiRegistrosClinicos` é falso. Isso não contradiz, por si só, o CA-4, que se refere aos pacientes **com** registros clínicos.
+O CA-4 não proíbe necessariamente a exclusão de cadastros **sem** registros clínicos.
 
-## 3. RN-001 — Associação Tutor–Paciente
+## 3. RN-001 — um responsável por paciente
 
-**Regra original, resumida:** cada paciente deve ter **um único tutor responsável**, e uma eventual reatribuição não pode apagar seu histórico clínico.
+- Cada paciente tem um campo obrigatório `TutorId`, mapeado para `Tutor` no EF Core.
+- A edição altera o `TutorId` mantendo o mesmo `Pet`, de modo coerente com a preservação estrutural do histórico.
+- A troca de tutor exige autorização e validação do tutor informado.
+- **Pendente:** teste real de persistência, consulta posterior e restrição de acesso do tutor anterior.
 
-- **Cadastro:** o `TutorId` é exigido e associado ao registro do paciente.
-- **Reatribuição:** `Atualizar()` permite alterar `TutorId`, após conferir o tutor e o vínculo com a clínica; mantém o identificador do paciente.
-- **Segurança:** `AcessoAoPaciente.Permitido()` limita leitura a tutor responsável, veterinário responsável ou perfis de administração/apoio, conforme o papel.
-- **Pendência:** verificar o mapeamento EF Core, restrições efetivas do banco, histórico clínico antes/depois da reatribuição e consequências de uma troca de tutor nas funcionalidades relacionadas à HU-013.
+## 4. Cadastro pelo Tutor — esclarecimento de escopo
 
-## 4. Funcionalidades adicionais encontradas
+O documento HU-003 descreve o **Administrador** como ator do cadastro, sem detalhar o cadastro pelo próprio Tutor.
 
-| Evidência | Diferença em relação à HU-003 original | Estado |
+Na implementação existente:
+- `POST /api/pets/meus` tem autorização exclusiva para Tutor e chama `CadastrarComoTutor()`.
+- O Tutor responsável é obtido da identidade autenticada, não escolhido livremente pelo usuário.
+- `VetCare.Web/src/pages/MeusPets.tsx` oferece cadastro ao Tutor.
+
+**Avaliação atual:** funcionalidade presente e coerente com o esclarecimento da equipe. Existe uma **lacuna de explicitação documental**, e não um defeito demonstrado do código. Formalizar o fluxo em atualização futura da HU-013 ou em requisito complementar aprovado.
+
+## 5. Edição limitada e exclusão pelo Tutor — PROPOSTA, ainda não implementada
+
+**Decisão em estudo:** Tutor poderá corrigir dados cadastrais permitidos de seus próprios cães; não poderá trocar o tutor responsável, modificar registros clínicos nem excluir pacientes.
+
+| Operação | Código atual | Comportamento proposto |
 | --- | --- | --- |
-| `POST /api/pets/meus` e `CadastrarComoTutor()` | Tutor pode cadastrar um pet próprio; o tutor é obtido da sessão, não de um identificador enviado pelo formulário | Ampliação observada; validar escopo documental |
-| `POST /api/pets` com `Perfis.EquipeClinica` | Cadastro também está acessível a papéis da equipe clínica, conforme definição da constante de perfis | Comparar papéis autorizados com HU-003 e RN-005 |
-| `Atualizar()` trata data de óbito | Registro de óbito pode inativar o paciente e interromper tratamentos em aberto | Fluxo adicional; analisar em requisito pertinente, sem classificá-lo como erro |
-| `Excluir()` remove cadastro sem histórico | A exclusão física é permitida em uma condição específica | Conferir implementação de `PossuiRegistrosClinicos` e RN-004 |
+| Consultar os próprios animais | `GET /api/pets/meus` | Manter |
+| Cadastrar o próprio animal | `POST /api/pets/meus` | Manter |
+| Editar seu próprio animal | `PUT /api/pets/{id}` é limitado à equipe clínica; não foi identificado endpoint específico do Tutor | Implementar edição parcial, após aprovação dos campos |
+| Excluir animal | `DELETE /api/pets/{id}` é exclusivo do Administrador | Manter vedado ao Tutor |
 
-## 5. Achados e limites
+**Viabilidade técnica preliminar:** é possível oferecer um endpoint dedicado com DTO limitado, vínculo ao Tutor autenticado e validação de propriedade do registro; não se identificou necessidade **óbvia** de reestruturação do relacionamento `Pet`–`Tutor`. A viabilidade precisa ser confirmada pela equipe e em testes.
 
-1. **Correspondência identificada:** há implementação coerente com os quatro critérios de aceite da HU-003.
-2. **Correspondência estrutural aparente:** a alteração de tutor modifica o vínculo no mesmo paciente, o que sugere preservação do histórico; isso precisa ser demonstrado em execução e persistência.
-3. **Extensão de implementação:** o cadastro pelo Tutor não está expresso na descrição original da HU-003. Não constitui defeito confirmado.
-4. **Autorização:** há controles no controller e nos casos de uso, mas ainda não foram feitos testes de acesso entre diferentes usuários e clínicas.
-5. **Sem execução do sistema original:** não houve teste de API, banco de dados ou interface do projeto do Mateus nesta investigação. O VetCare Lab também não comprova esses comportamentos.
+**Critérios de aceite propostos, sujeitos a aprovação:**
+1. Tutor autenticado pode alterar **apenas campos cadastrais autorizados** de paciente que esteja vinculado a sua conta.
+2. A tentativa de alterar paciente de outro Tutor é negada.
+3. A operação não recebe nem modifica `TutorId`, dados clínicos, histórico ou status por solicitação do Tutor.
+4. Tutor não recebe permissão de excluir paciente, inclusive sem histórico.
+5. A edição mantém os identificadores e registros clínicos existentes.
 
-## 6. Verificações seguintes
+**Em aberto:** quais campos exatamente (nome, raça, nascimento, pelagem, microchip etc.) podem ser alterados? Informações clínicas como peso dependem de orientação específica.
 
-- Inspecionar `PetRepository.PossuiRegistrosClinicos` e as entidades/mapeamentos de `Pet` e prontuário.
-- Verificar se o banco garante vínculo obrigatório e consistente entre paciente e tutor.
-- Rastrear o histórico clínico em uma reatribuição de tutor.
-- Confrontar o cadastro pelo Tutor com Documento de Visão e HU-013.
-- Se houver ambiente de teste isolado, executar cenários com contas fictícias e preservar evidências sem dados pessoais reais.
+## 6. Espécie e raça
 
-## 7. Como explicar à equipe
+**Esclarecimento:** a clínica atende **predominantemente cães**, e um fluxo denominado «Cadastro de cão» não precisa pedir ao usuário que selecione a espécie.
 
-> “A HU-003 apresenta correspondências no código para cadastro vinculado ao tutor, validação de tutor obrigatório, edição e bloqueio da exclusão quando existe histórico. A RN-001 também aparece representada pela associação entre paciente e tutor. Encontramos fluxos adicionais, como cadastro pelo próprio tutor. Ainda precisamos confirmar a persistência, a preservação efetiva do histórico e as restrições de autorização antes de concluir a conformidade.”
+- O documento original da HU-003 inclui espécie entre os dados do cadastro.
+- O código atual armazena `Pet.Especie` e a interface de Tutor oferece diferentes espécies.
+- **Proposta de interface:** em um cadastro específico de cão, registrar a espécie de forma implícita e preservar o campo no modelo/API.
+- **Não concluir:** que a clínica só atende cães ou que o sistema deva bloquear globalmente outras espécies.
+- **Pendente:** esclarecer se existem fluxos próprios para outros animais e como os formulários devem se relacionar.
 
-**Próxima etapa:** aprofundar a RN-001 na camada de persistência e manter o presente registro como artefato complementar — sem alterar os documentos acadêmicos nem a implementação original.
+## 7. RN-004 — integridade do prontuário
+
+O documento original determina que **registros clínicos confirmados não podem ser excluídos** e que alterações posteriores mantenham rastreabilidade da versão anterior.
+
+`PetRepository.PossuiRegistrosClinicos()` consulta avaliações, atendimentos, prescrições, documentos clínicos, observações internas, tratamentos e vacinas. **Não consulta diretamente alergias e condições clínicas**. Em `Remover()`, alergias/condições e prontuários vazios são removidos junto com o paciente.
+
+**Achado:** possível lacuna de abrangência da proteção do histórico, dependendo da classificação clínica de alergias/condições. **Não é defeito confirmado.**
+
+**Pendente:** investigar se alertas clínicos são registros protegidos, o versionamento efetivo das alterações, relacionamentos de banco e comportamento real diante de exclusão.
+
+## 8. Estado dos testes e limites
+
+- Inspeções acima: leitura estática de arquivos do Mateus, sem executar API ou banco original.
+- Testes comunicados pela usuária no **VetCare Lab**, em outro ambiente e com dados fictícios: cadastro sem Tutor foi impedido; cadastro com Tutor e visualização em dois perfis ocorreram. Isso **não comprova** requisitos na implementação original.
+- A alteração de Tutor preservando histórico no Lab e os testes de exclusão/inativação ainda não têm resultado conclusivo registrado nesta análise.
+
+## 9. Encaminhamento
+
+1. Validar com a equipe/cliente os campos editáveis pelo Tutor e a decisão de que ele não pode excluir.
+2. Formalizar no documento de requisitos atualizado, **quando for a etapa de revisão documental**, o cadastro pelo Tutor e eventual edição limitada.
+3. Concluir inspeção da RN-004 e planejar testes de API/banco antes de afirmar conformidade.
+4. Manter os três PDFs acadêmicos originais intactos durante a investigação.
+
+**Síntese:** há boa correspondência estrutural de HU-003 e RN-001. A edição limitada pelo Tutor é uma **melhoria proposta**, não funcionalidade implementada. O cadastro pelo Tutor já existe no código e foi confirmado como desejado; o campo de espécie pode ser implícito no fluxo canino, sem proibição geral de outros animais.
