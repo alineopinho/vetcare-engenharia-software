@@ -1,0 +1,66 @@
+@startuml
+' Proposta documental, nao diagrama AS-IS ou homologado
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam actorStyle awesome
+actor "Administrador" as Admin
+actor "Veterinário" as Vet
+actor "Tutor" as Tutor
+actor "Apoio administrativo" as Apoio
+rectangle "VetCare — escopo documentado" {
+  usecase "Autenticar-se / sair\nHU-001" as U01
+  usecase "Gerenciar usuários\nHU-002" as U02
+  usecase "Gerenciar pacientes\nHU-003" as U03
+  usecase "Gerenciar agenda individual\nHU-004" as U04
+  usecase "Consultar agenda geral\nHU-005" as U05
+  usecase "Confirmar/cancelar presença\nHU-006" as U06
+  usecase "Registrar avaliação clínica\nHU-007" as U07
+  usecase "Registrar atendimento\nHU-008" as U08
+  usecase "Registrar observações internas\nHU-009" as U09
+  usecase "Anexar mídias\nHU-010" as U10
+  usecase "Consultar prontuário\nHU-011" as U11
+  usecase "Gerenciar documentos clínicos\nHU-012" as U12
+  usecase "Acompanhar tratamento\nHU-013" as U13
+  usecase "Trocar mensagens\nHU-014" as U14
+  usecase "Receber notificações\nHU-015" as U15
+  usecase "Consultar indicadores\nHU-016" as U16
+}
+Admin -- U01
+Vet -- U01
+Tutor -- U01
+Admin -- U02
+Admin -- U03
+Vet -- U04
+Admin -- U05
+Apoio -- U05
+Tutor -- U06
+Vet -- U07
+Vet -- U08
+Vet -- U09
+Vet -- U10
+Admin -- U11
+Vet -- U11
+Tutor -- U11
+Tutor -- U13
+Tutor -- U14
+Vet -- U14
+Tutor -- U15
+Vet -- U15
+Admin -- U16
+Vet -- U16
+' HU-012: ator principal nao consolidado; pendencia documentada no MD.
+note right of U12
+  Atores autorizados a confirmar
+  na revisao dos requisitos.
+end note
+note right of U03
+  Cadastro pelo Tutor ja existe no codigo,
+  mas nao esta explicitado na HU-003 original.
+end note
+note left of Apoio
+  Perfil previsto na Arquitetura.
+  Permissoes adicionais dependem
+  de consolidacao documental.
+end note
+@enduml
