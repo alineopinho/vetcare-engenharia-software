@@ -1,51 +1,15 @@
-// Simulação de login HU-001, sem backend ou credenciais reais.
-import { iniciarPacientes, encerrarPacientes } from './pacientes.js';
-const users = Object.freeze({
-  admin: { email: 'admin@vetcare.test', password: 'Demo123!', name: 'Alex', profile: 'Administrador', features: ['Gerenciar usuários', 'Agenda geral', 'Indicadores da clínica'] },
-  vet: { email: 'veterinario@vetcare.test', password: 'Demo123!', name: 'Dra. Marina', profile: 'Veterinário', features: ['Minha agenda', 'Registrar avaliação', 'Prontuário clínico'] },
-  tutor: { email: 'tutor@vetcare.test', password: 'Demo123!', name: 'João', profile: 'Tutor', features: ['Meus pets', 'Confirmar sessões', 'Acompanhar tratamento'] },
-  apoio: { email: 'apoio@vetcare.test', password: 'Demo123!', name: 'Rafaela', profile: 'Apoio administrativo', features: ['Consultar agenda geral', 'Apoiar cadastros', 'Confirmar agendamentos'] },
-});
-const form = document.querySelector('#login-form');
-const emailField = document.querySelector('#email');
-const passwordField = document.querySelector('#password');
-const feedback = document.querySelector('#feedback');
-const loginView = document.querySelector('#login-view');
-const dashboardView = document.querySelector('#dashboard-view');
-const dashboardHome = document.querySelector('#dashboard-home');
-const patientsView = document.querySelector('#pets-view');
-function mostrarPacientes(aberto) {
-  dashboardHome.hidden = aberto;
-  patientsView.hidden = !aberto;
-  document.body.classList.toggle('patients-open', aberto);
-}
-document.querySelector('#open-patients').addEventListener('click', () => mostrarPacientes(true));
-document.querySelector('#back-dashboard').addEventListener('click', () => mostrarPacientes(false));
-function showError(message) { feedback.textContent = message; feedback.hidden = false; }
-function clearError() { feedback.textContent = ''; feedback.hidden = true; }
-for (const button of document.querySelectorAll('[data-user]')) {
-  button.addEventListener('click', () => {
-    const user = users[button.dataset.user];
-    emailField.value = user.email; passwordField.value = user.password;
-    clearError(); emailField.focus();
-  });
-}
-form.addEventListener('submit', (event) => {
-  event.preventDefault(); clearError();
-  const email = emailField.value.trim().toLowerCase();
-  const password = passwordField.value;
-  if (!email || !password) return showError('Informe o e-mail e a senha para entrar.');
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return showError('Informe um e-mail válido.');
-  const user = Object.values(users).find((item) => item.email === email && item.password === password);
-  if (!user) return showError('E-mail ou senha inválidos.');
-  document.querySelector('#welcome').textContent = `Olá, ${user.name}!`;
-  document.querySelector('#profile-message').textContent = `Perfil demonstrativo: ${user.profile}`;
-  const list = document.querySelector('#resources'); list.replaceChildren();
-  for (const feature of user.features) { const li = document.createElement('li'); li.textContent = feature; list.append(li); }
-  iniciarPacientes(user.profile);
-  mostrarPacientes(false);
-  loginView.hidden = true; dashboardView.hidden = false;
-});
-document.querySelector('#logout').addEventListener('click', () => {
-  mostrarPacientes(false); encerrarPacientes(); form.reset(); clearError(); dashboardView.hidden = true; loginView.hidden = false; emailField.focus();
-});
+'use strict';
+// Os dados abaixo são metadados da documentação, NÃO registros de usuários/pacientes.
+const modules=[
+{id:'visao',name:'Visão geral',hu:'HU-001 a HU-016',description:'Mapa das funcionalidades especificadas no Documento de Requisitos de Software (18/06/2026).',items:['Atores: Administrador, Veterinário e Tutor; Apoio necessita consolidação de permissões','Regras clínicas e de privacidade no servidor, em fase futura','Rastreabilidade e testes por critérios de aceite']},
+{id:'acesso',name:'Acesso e usuários',hu:'HU-001 · HU-002',description:'Autenticação por perfil e administração de contas. Bloqueio após cinco tentativas aparece no DRS.',items:['Login e logout','Cadastro, edição e desativação de usuários','Redefinição de senha','Restrições por perfil']},
+{id:'pets',name:'Pacientes e tutores',hu:'HU-003 · HU-013',description:'Vincular cada paciente a um tutor e acompanhar o tratamento sem expor observações internas.',items:['Cadastro e edição de pacientes','Vínculo único com tutor (RN-001)','Histórico preservado (RN-004)','Cadastro pelo Tutor: solicitação posterior, depende de registro de decisão']},
+{id:'agenda',name:'Agenda e sessões',hu:'HU-004 · HU-005 · HU-006',description:'Agenda individual, visão geral e confirmação/cancelamento de sessões.',items:['Visões por dia, semana e mês','Conflitos de horário (RN-002)','Agenda consolidada por profissional','Antecedência de cancelamento a definir (RN-009)']},
+{id:'clinica',name:'Atendimento clínico',hu:'HU-007 · HU-008 · HU-009',description:'Avaliações clínicas, atendimentos de fisioterapia e observações internas.',items:['Avaliação com campos obrigatórios (RN-010)','Atendimento com evolução e escala de dor','Correção com versões preservadas','Observações apenas para perfis autorizados (RN-003)']},
+{id:'prontuario',name:'Prontuário e arquivos',hu:'HU-010 · HU-011 · HU-012',description:'Linha do tempo do paciente, mídias, documentos e informações clínicas.',items:['Histórico cronológico','Fotos e vídeos de sessões','Documentos clínicos','Formatos e tamanhos por definir (RN-011)']},
+{id:'comunicacao',name:'Comunicação',hu:'HU-014 · HU-015',description:'Mensagens entre clínica e Tutor e notificações sobre eventos relevantes.',items:['Conversas e mensagens não lidas','Notificações de sessão e prontuário','Confirmações e cancelamentos','Privacidade dos destinatários']},
+{id:'indicadores',name:'Indicadores',hu:'HU-016',description:'Visão operacional por perfil, mantendo os indicadores de cada veterinário limitados aos seus pacientes.',items:['Avaliações do dia','Atendimentos do dia','Confirmações pendentes','Pacientes ativos']}
+];
+const menu=document.querySelector('#menu');const title=document.querySelector('#moduloTitulo');const idLabel=document.querySelector('#moduloId');const panel=document.querySelector('#painel');
+function select(id){const current=modules.find(m=>m.id===id)||modules[0];title.textContent=current.name;idLabel.textContent=current.hu;panel.replaceChildren();const cap=document.createElement('div');cap.className='caps';cap.textContent='ESCOPO DOCUMENTADO · NÃO IMPLEMENTADO';const desc=document.createElement('p');desc.textContent=current.description;const list=document.createElement('div');list.className='features';for(const value of current.items){const el=document.createElement('div');el.className='feature';el.textContent=value;list.appendChild(el)}panel.append(cap,desc,list);for(const button of menu.querySelectorAll('button')){const active=button.dataset.module===current.id;button.classList.toggle('active',active);button.setAttribute('aria-current',active?'page':'false')}}
+for(const m of modules){const button=document.createElement('button');button.type='button';button.className='navitem';button.dataset.module=m.id;button.textContent=m.name;button.addEventListener('click',()=>select(m.id));menu.appendChild(button)}select('visao');

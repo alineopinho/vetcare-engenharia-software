@@ -1,107 +1,28 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="VetCare Lab — ambiente demonstrativo de gestão veterinária com dados fictícios.">
-  <title>VetCare Lab | Acesso</title>
-  <link rel="stylesheet" href="css/colors.css">
-  <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/login.css">
-  <link rel="stylesheet" href="css/pacientes.css">
-  <script src="js/app.js" type="module"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="description" content="VetCare Lab V2 — mapa de módulos e rastreabilidade documental para prototipagem independente." />
+  <title>VetCare Lab V2 · Visão dos módulos</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <script src="js/app.js" defer></script>
 </head>
 <body>
-  <main class="layout">
-    <section class="intro" aria-label="Apresentação do VetCare Lab">
-      <span class="eyebrow">Ambiente de demonstração</span>
-      <div class="brand"><span class="mark" aria-hidden="true">✚</span><h1>VetCare <em>Lab</em></h1></div>
-      <p class="lead">Um espaço para explorar a rotina de uma clínica veterinária.</p>
-      <p>Entre com um dos perfis disponíveis e conheça as áreas de trabalho do sistema, em uma experiência ilustrativa.</p>
-      <div class="info"><strong>Conheça os diferentes acessos</strong><span>Administração, atendimento veterinário, área do tutor e apoio administrativo — cada perfil com sua própria visão.</span></div>
-      <p class="lab-note">Este é um ambiente independente, com contas fictícias e funcionalidades simuladas. Não está conectado ao VetCare original.</p>
-    </section>
-    <section class="panel" aria-label="Área de acesso">
-      <div id="login-view">
-        <p class="overline">Área de acesso</p>
-        <h2>Bem-vindo de volta</h2>
-        <p class="muted">Acesse sua área de demonstração.</p>
-        <form id="login-form" novalidate>
-          <label for="email">E-mail</label>
-          <input id="email" name="email" type="email" autocomplete="off" placeholder="seuemail@exemplo.test" required>
-          <label for="password">Senha</label>
-          <input id="password" name="password" type="password" autocomplete="off" placeholder="Digite a senha" required>
-          <p id="feedback" class="feedback" role="alert" aria-live="polite" hidden></p>
-          <button class="primary" type="submit">Entrar</button>
-        </form>
-        <div class="demo-users">
-          <h3>Experimentar com uma conta fictícia</h3>
-          <p class="hint">Escolha um perfil para preencher automaticamente os dados de acesso.</p>
-          <div class="accounts">
-            <button type="button" class="account" data-user="admin">Administrador</button>
-            <button type="button" class="account" data-user="vet">Veterinário</button>
-            <button type="button" class="account" data-user="tutor">Tutor</button>
-            <button type="button" class="account" data-user="apoio">Apoio administrativo</button>
-          </div>
-        </div>
-      </div>
-      <section id="dashboard-view" hidden aria-label="Área do usuário">
-        <button type="button" id="logout" class="primary">Sair da conta</button>
-        <div id="dashboard-home">
-        <p class="overline">Minha área</p>
-        <h2 id="welcome">Bem-vindo!</h2>
-        <p id="profile-message" class="muted"></p>
-        <div class="demo-banner">Você está explorando uma conta fictícia. Os recursos abaixo representam possibilidades da área selecionada, sem conexão com dados clínicos reais.</div>
-        <button id="open-patients" type="button" class="primary">Abrir pacientes</button>
-        <h3>Áreas disponíveis neste perfil</h3>
-        <ul id="resources"></ul>
-        </div>
-        <section id="pets-view" aria-label="Pacientes e pets" hidden>
-          <button id="back-dashboard" type="button" class="pet-secondary">← Voltar à minha área</button>
-          <p class="overline">Gestão demonstrativa</p>
-          <h3 id="pets-title">Pacientes</h3>
-          <p id="pets-description" class="muted"></p>
-          <div id="pet-form-area">
-            <form id="pet-form" novalidate>
-              <div class="pet-form-grid">
-                <label>Nome do paciente<input id="pet-name" required maxlength="80" autocomplete="off"></label>
-                <label>Raça
-                  <select id="pet-breed" required>
-                    <option value="">Selecione uma raça</option>
-                    <option value="SRD">Sem raça definida (SRD)</option>
-                    <option value="Shih Tzu">Shih Tzu</option>
-                    <option value="Poodle">Poodle</option>
-                    <option value="Labrador Retriever">Labrador Retriever</option>
-                    <option value="Golden Retriever">Golden Retriever</option>
-                    <option value="Bulldog Francês">Bulldog Francês</option>
-                    <option value="Spitz Alemão">Spitz Alemão</option>
-                    <option value="Yorkshire Terrier">Yorkshire Terrier</option>
-                    <option value="Pinscher">Pinscher</option>
-                    <option value="Dachshund">Dachshund (Salsicha)</option>
-                    <option value="Pastor Alemão">Pastor Alemão</option>
-                    <option value="Border Collie">Border Collie</option>
-                    <option value="Outra">Outra raça</option>
-                  </select>
-                </label>
-                <label id="pet-breed-other-field" hidden>Especifique a raça
-                  <input id="pet-breed-other" maxlength="80" autocomplete="off" placeholder="Nome da raça">
-                </label>
-                <label>Data de nascimento<input id="pet-birth" type="date" required></label>
-                <label>Tutor responsável<select id="pet-tutor" required></select></label>
-              </div>
-              <p id="pet-feedback" class="pet-feedback" role="status" aria-live="polite" hidden></p>
-              <button class="primary" id="pet-submit" type="submit">Cadastrar paciente</button>
-              <button class="pet-secondary" id="pet-cancel" type="button" hidden>Cancelar edição</button>
-            </form>
-          </div>
-          <h3>Pacientes cadastrados</h3>
-          <div class="pet-table-wrap"><table class="pet-table"><thead><tr><th>Paciente</th><th>Raça</th><th>Tutor</th><th>Situação</th><th>Histórico</th><th>Ações</th></tr></thead><tbody id="pet-list"></tbody></table></div>
-          <p class="pet-note">Registros e permissões são apenas simulações no navegador. As alterações são reiniciadas ao sair ou atualizar a página.</p>
-        </section>
-
-      </section>
-    </section>
-  </main>
-  <footer>VetCare Lab · Ambiente independente de demonstração · Dados fictícios</footer>
+  <a class="skip" href="#conteudo">Pular para o conteúdo</a>
+  <header class="topbar"><div class="identity"><span class="mark" aria-hidden="true">✚</span><div><strong>VetCare <em>Lab V2</em></strong><small>Engenharia de Software · demonstração independente</small></div></div><span class="chip">Protótipo estático • sem autenticação</span></header>
+  <div class="shell">
+    <nav class="sidebar" aria-label="Navegação dos módulos"><p class="navlabel">MÓDULOS</p><div id="menu"></div><div class="aside-note"><strong>Origem</strong><p>16 histórias de usuário · DRS 18/06/2026</p><p>Projeto Mateus: comparação posterior.</p></div></nav>
+    <main id="conteudo" tabindex="-1">
+      <div class="eyebrow">DOCUMENTAÇÃO → PROTÓTIPO → TESTES</div>
+      <h1>Explorando os requisitos do VetCare</h1>
+      <p class="lede">Esta interface organiza os módulos previstos na documentação acadêmica. Os painéis são demonstrativos e <strong>não representam funcionalidades implementadas</strong>.</p>
+      <section class="summary" aria-label="Resumo do escopo"><div><strong>16</strong><span>Histórias de usuário</span></div><div><strong>11</strong><span>Regras de negócio</span></div><div><strong>8</strong><span>Requisitos não funcionais</span></div></section>
+      <div class="sectionhead"><div><p class="eyebrow">NAVEGAÇÃO EXPLORATÓRIA</p><h2 id="moduloTitulo">Visão geral</h2></div><span id="moduloId" class="tag"></span></div>
+      <div id="painel" class="panel" aria-live="polite"></div>
+      <section class="note"><h2>O que este laboratório ainda não comprova?</h2><p>Login e autorização reais, persistência, integridade clínica, privacidade de prontuários e funcionamento da implementação do Mateus. Esses aspectos exigirão uma API, PostgreSQL e testes próprios.</p></section>
+    </main>
+  </div>
+  <footer>VetCare Lab V2 · Dados e módulos ilustrativos · Nenhuma informação clínica real</footer>
 </body>
 </html>
